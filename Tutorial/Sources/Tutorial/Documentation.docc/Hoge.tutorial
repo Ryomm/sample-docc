@@ -1,0 +1,23 @@
+@Tutorial(time: 10) {
+    @Intro(title: "1") {
+        111
+        
+    }
+    
+    @Section(title: "あああ") {
+        @ContentAndMedia {
+            あああ
+            
+        }
+        
+        @Steps {
+            @Step {
+                ああ
+            }
+            
+            @Step {
+                いい
+            }
+        }
+    }
+}
