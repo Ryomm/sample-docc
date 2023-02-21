@@ -1,0 +1,21 @@
+@Tutorial(time: 10) {
+    @Intro(title: "なんかのチュートリアル　練習1") {
+        ほ〜ん こうやるのね
+    }
+    
+    @Section(title: "ほほう") {
+        @ContentAndMedia {
+            なんもわからん
+        }
+        
+        @Steps {
+            @Step {
+                わかったふりしてなんもわからん
+            }
+            
+            @Step {
+                雰囲気出してるだけ
+            }
+        }
+    }
+}

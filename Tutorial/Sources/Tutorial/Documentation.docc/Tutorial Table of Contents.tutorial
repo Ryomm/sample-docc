@@ -1,0 +1,11 @@
+@Tutorials(name: "なんかのチュートリアル") {
+    @Intro(title: "チュート") {
+        これはなんかのチュートリアルです
+    }
+    
+    @Chapter(name: "ほほう") {
+        こうやってやるのね
+        
+        @TutorialReference(tutorial: "doc:Practice1")
+    }
+}
