@@ -1,0 +1,71 @@
+name: DeployDocc
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-13
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_15.0.1.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build docc
+        run: |
+          cd Tutorial
+          swift package \
+            --allow-writing-to-directory ../docs \
+            generate-documentation \
+            --target Tutorial \
+            --disable-indexing \
+            --transform-for-static-hosting \
+            --hosting-base-path . \
+            --output-path ../docs
+          cd ..
+      - name: Create tar file
+        run: |
+          chmod -v -R +rX "./docs/" | while read line; do
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
+          gtar \
+            --dereference --hard-dereference \
+            --directory "./docs/" \
+            -cvf "$RUNNER_TEMP/docs.tar" \
+            --exclude=.git \
+            --exclude=.github \
+            .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: /Users/runner/work/_temp/docs.tar
+          retention-days: 1
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    environment: Develop
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: docs
+          path: .
+      - name: Extract And Delete tar file
+        run: |
+          tar -xvf docs.tar
+          rm docs.tar
+      - name: Configure AWS crredentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-northeast-1
+      - name: Upload to S3
+        env:
+          S3_UPLOAD_BUCKET: ${{ vars.S3_BUCKET_NAME }}
+        run: |
+          aws s3 sync . s3://$S3_UPLOAD_BUCKET/wwwroot/mobile-app/ios/tutorial/ --delete
