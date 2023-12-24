@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Tutorial/Sources/Tutorial/Documentation.docc/theme-settings.json">
+   </FileRef>
+   <FileRef
       location = "group:Tutorial">
    </FileRef>
 </Workspace>
